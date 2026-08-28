@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mutirão do Cimento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #201b17;
+    --surface: #2b2420;
+    --surface-2: #352c26;
+    --cement: #a39a8c;
+    --cement-dim: #6b6459;
+    --terracotta: #c1592e;
+    --terracotta-dim: #8f4222;
+    --cream: #efe7d8;
+    --gold: #d9a441;
+    --radius: 6px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, #3a2f27 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 10%, #2e2620 0%, transparent 45%),
+      var(--bg);
+    color:var(--cream);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:56px 20px 40px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Bebas Neue', sans-serif;
+    font-weight:400;
+    font-size:clamp(42px, 9vw, 76px);
+    letter-spacing:.02em;
+    line-height:.92;
+    margin:0 0 14px;
+    text-align:center;
+    color:var(--cream);
+  }
+  h1 span{color:var(--terracotta);}
+  .sub{
+    max-width:480px;
+    text-align:center;
+    color:var(--cement);
+    font-size:15px;
+    line-height:1.55;
+    margin:0 0 44px;
+  }
+  .sub strong{color:var(--cream);font-weight:600;}
+
+  .gauge-wrap{
+    position:relative;
+    width:220px;
+    margin-bottom:8px;
+  }
+  .gauge-wrap svg{display:block;width:100%;height:auto;}
+  .fill-rect{transition:y 900ms cubic-bezier(.22,.8,.28,1), height 900ms cubic-bezier(.22,.8,.28,1);}
+  .sack-stroke{fill:none;stroke:var(--cement-dim);stroke-width:2;}
+  .stitch{stroke:var(--cream);stroke-width:1.4;stroke-dasharray:3 4;opacity:.5;fill:none;}
+  .pct-label{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:22px;
+    fill:var(--cream);
+    text-anchor:middle;
+  }
+
+  .stats{
+    font-family:'JetBrains Mono', monospace;
+    text-align:center;
+    margin-top:18px;
+  }
+  .stats .primary{
+    font-size:clamp(30px,7vw,44px);
+    font-weight:700;
+    color:var(--cream);
+  }
+  .stats .primary small{
+    font-size:16px;
+    font-weight:500;
+    color:var(--cement);
+  }
+  .stats .money{
+    margin-top:8px;
+    font-size:14px;
+    color:var(--cement);
+  }
+  .stats .money b{color:var(--gold);font-weight:600;}
+
+  .cta{
+    margin-top:38px;
+    display:inline-block;
+    background:var(--terracotta);
+    color:var(--cream);
+    text-decoration:none;
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    padding:15px 34px;
+    border-radius:var(--radius);
+    letter-spacing:.01em;
+    box-shadow:0 4px 0 var(--terracotta-dim);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .cta:hover{transform:translateY(2px);box-shadow:0 2px 0 var(--terracotta-dim);}
+
+  .foot{
+    margin-top:56px;
+    font-size:12px;
+    color:var(--cement-dim);
+    text-align:center;
+  }
+
+  details{
+    margin-top:64px;
+    width:100%;
+    max-width:340px;
+    border-top:1px solid var(--surface-2);
+    padding-top:14px;
+  }
+  summary{
+    cursor:pointer;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--cement-dim);
+  }
+  .admin{
+    display:flex;
+    gap:8px;
+    margin-top:12px;
+  }
+  .admin input{
+    flex:1;
+    background:var(--surface);
+    border:1px solid var(--surface-2);
+    border-radius:var(--radius);
+    padding:9px 10px;
+    color:var(--cream);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+  }
+  .admin button{
+    background:var(--surface-2);
+    color:var(--cream);
+    border:1px solid var(--cement-dim);
+    border-radius:var(--radius);
+    padding:0 14px;
+    font-family:'Work Sans', sans-serif;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .admin-note{font-size:11px;color:var(--cement-dim);margin-top:8px;line-height:1.5;}
+</style>
+</head>
+<body>
+
+  <div class="eyebrow">Campanha de construção</div>
+  <h1>1.200 <span>sacos</span><br>de cimento</h1>
+  <p class="sub">Cada saco custa <strong>R$ 44,00</strong>. Toda doação, de qualquer valor, vira sacos — e cada saco levanta um pouco mais da nossa igreja.</p>
+
+  <div class="gauge-wrap">
+    <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="sackClip">
+          <path d="M100,14
+                   C78,14 70,26 68,40
+                   C40,52 24,86 24,128
+                   C24,182 40,240 100,246
+                   C160,240 176,182 176,128
+                   C176,86 160,52 132,40
+                   C130,26 122,14 100,14 Z"/>
+        </clipPath>
+      </defs>
+
+      <g clip-path="url(#sackClip)">
+        <rect id="fillRect" class="fill-rect" x="0" y="246" width="200" height="0" fill="var(--terracotta)"/>
+        <rect x="0" y="246" width="200" height="0" fill="none"/>
+      </g>
+
+      <path class="sack-stroke" d="M100,14
+               C78,14 70,26 68,40
+               C40,52 24,86 24,128
+               C24,182 40,240 100,246
+               C160,240 176,182 176,128
+               C176,86 160,52 132,40
+               C130,26 122,14 100,14 Z"/>
+      <path class="stitch" d="M74,42 C88,48 112,48 126,42"/>
+      <path class="stitch" d="M35,120 C60,110 140,110 165,120" opacity=".28"/>
+
+      <text id="pctText" class="pct-label" x="100" y="132">0%</text>
+    </svg>
+  </div>
+
+  <div class="stats">
+    <div class="primary"><span id="bagsDonated">0</span> <small>/ 1.200 sacos</small></div>
+    <div class="money">Arrecadado: <b id="moneyRaised">R$ 0,00</b> de R$ 52.800,00</div>
+  </div>
+
+  <a class="cta" href="#" id="donateLink">Fazer uma doação</a>
+
+  <div class="foot">Doações processadas pelo app da igreja.<br>Atualizado automaticamente.</div>
+
+  <details>
+    <summary>Modo demonstração</summary>
+    <div class="admin">
+      <input type="number" id="demoInput" placeholder="Total arrecadado (R$)" min="0" step="1">
+      <button id="demoBtn">Simular</button>
+    </div>
+    <p class="admin-note">
+      Isto simula o valor total arrecadado enquanto a integração automática com a inChurch não está no ar.
+      Quando o backend do webhook estiver pronto, troque a constante <code>API_URL</code> no código pela URL real —
+      a página passa a buscar o valor sozinha e este painel pode ser removido.
+    </p>
+  </details>
+
+<script>
+  const GOAL_BAGS = 1200;
+  const BAG_PRICE = 44;
+  const GOAL_MONEY = GOAL_BAGS * BAG_PRICE; // 52.800
+
+  // Troque por a URL do backend (ex.: https://sua-api.exemplo.com/api/progress)
+  // que expõe { "totalArrecadado": number }. Enquanto for null, usa o storage local (modo demo).
+  const API_URL = null;
+
+  const fillRect = document.getElementById('fillRect');
+  const pctText = document.getElementById('pctText');
+  const bagsEl = document.getElementById('bagsDonated');
+  const moneyEl = document.getElementById('moneyRaised');
+  const demoInput = document.getElementById('demoInput');
+  const demoBtn = document.getElementById('demoBtn');
+
+  const SACK_TOP = 14, SACK_BOTTOM = 246, SACK_HEIGHT = SACK_BOTTOM - SACK_TOP;
+  const STORAGE_KEY = 'campanha-cimento-total-arrecadado';
+
+  function formatBRL(v){
+    return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  }
+
+  function render(totalArrecadado){
+    const bags = Math.floor(totalArrecadado / BAG_PRICE);
+    const pct = Math.min(1, bags / GOAL_BAGS);
+
+    fillRect.setAttribute('y', SACK_BOTTOM - SACK_HEIGHT * pct);
+    fillRect.setAttribute('height', SACK_HEIGHT * pct);
+    pctText.textContent = Math.round(pct * 100) + '%';
+    bagsEl.textContent = bags.toLocaleString('pt-BR');
+    moneyEl.textContent = formatBRL(totalArrecadado);
+  }
+
+  async function loadFromBackend(){
+    try{
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      render(data.totalArrecadado || 0);
+    }catch(e){
+      console.error('Falha ao buscar progresso da campanha', e);
+    }
+  }
+
+  async function loadFromStorage(){
+    try{
+      const result = await window.storage.get(STORAGE_KEY, true);
+      render(result ? Number(result.value) : 0);
+    }catch(e){
+      render(0);
+    }
+  }
+
+  async function refresh(){
+    if (API_URL){
+      await loadFromBackend();
+    } else {
+      await loadFromStorage();
+    }
+  }
+
+  demoBtn.addEventListener('click', async () => {
+    const val = Number(demoInput.value || 0);
+    try{
+      await window.storage.set(STORAGE_KEY, String(val), true);
+      render(val);
+    }catch(e){
+      console.error('Erro ao salvar valor de demonstração', e);
+    }
+  });
+
+  refresh();
+  if (API_URL){
+    setInterval(refresh, 30000); // repolling a cada 30s quando conectado ao backend real
+  }
+</script>
+
+</body>
+</html>
