@@ -22,13 +22,50 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
-app.use(express.json());
+
+// Guarda o corpo bruto (raw) da requisição também — o cálculo do HMAC
+// precisa dos bytes originais, não do JSON já interpretado.
+app.use(express.json({
+  verify: (req, res, buf) => { req.rawBody = buf; }
+}));
 
 const DATA_FILE = path.join(__dirname, 'total-arrecadado.json');
 const GOAL_BAGS = 1200;
 const BAG_PRICE = 44;
+
+// O segredo vem de uma variável de ambiente — NUNCA escreva o valor aqui no código.
+const WEBHOOK_SECRET = process.env.INCHURCH_WEBHOOK_SECRET;
+
+// TODO: confirmar com a inChurch o nome exato do header que carrega a assinatura
+// (aqui assumi "x-inchurch-signature", um padrão comum, mas pode ser diferente —
+// ex.: "x-hub-signature-256", "x-webhook-signature" etc.) e o algoritmo (assumi sha256).
+function isValidSignature(req) {
+  if (!WEBHOOK_SECRET) {
+    console.warn('INCHURCH_WEBHOOK_SECRET não configurado — recusando por segurança.');
+    return false;
+  }
+
+  const signatureHeader = req.get('x-inchurch-signature');
+  if (!signatureHeader) return false;
+
+  const expected = crypto
+    .createHmac('sha256', WEBHOOK_SECRET)
+    .update(req.rawBody)
+    .digest('hex');
+
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signatureHeader),
+      Buffer.from(expected)
+    );
+  } catch {
+    // tamanhos diferentes de buffer, por exemplo — assinatura inválida
+    return false;
+  }
+}
 
 function readTotal() {
   try {
@@ -52,10 +89,34 @@ function extractDonationAmount(payload) {
   return Number(amount);
 }
 
+// Só contamos doações do tipo/campanha configurado abaixo (ex.: "Mutirão do Cimento").
+// Defina o valor exato (nome, id ou slug da campanha) na variável de ambiente
+// INCHURCH_DONATION_TYPE no Railway.
+// TODO: ajustar o campo `payload?.data?.type` para o nome real do campo que a
+// inChurch usa (pode ser "campaign", "fund", "category", "designation" etc.) —
+// isso vem do exemplo de payload real que você conseguir no histórico de entregas.
+function isTargetDonationType(payload) {
+  const allowedType = process.env.INCHURCH_DONATION_TYPE;
+  if (!allowedType) {
+    console.warn('INCHURCH_DONATION_TYPE não configurado — aceitando todos os tipos por enquanto.');
+    return true;
+  }
+
+  const receivedType = payload?.data?.type ?? payload?.type ?? payload?.data?.campaign ?? '';
+  return String(receivedType).trim().toLowerCase() === allowedType.trim().toLowerCase();
+}
+
 // Endpoint que a inChurch vai chamar a cada doação
 app.post('/webhook/inchurch', (req, res) => {
-  // TODO: validar a assinatura/origem da requisição aqui, se a inChurch fornecer
-  // um header de assinatura (comum em webhooks — ex.: HMAC com o API Secret).
+  if (!isValidSignature(req)) {
+    console.warn('Webhook recebido com assinatura inválida ou ausente — ignorado.');
+    return res.status(401).json({ error: 'Assinatura inválida' });
+  }
+
+  if (!isTargetDonationType(req.body)) {
+    console.log('Doação de outro tipo/campanha recebida — ignorada.');
+    return res.status(200).json({ ok: true, ignored: true });
+  }
 
   const amount = extractDonationAmount(req.body);
 
