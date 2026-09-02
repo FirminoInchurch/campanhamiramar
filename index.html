@@ -8,23 +8,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #201b17;
-    --surface: #2b2420;
-    --surface-2: #352c26;
-    --cement: #a39a8c;
-    --cement-dim: #6b6459;
-    --terracotta: #c1592e;
-    --terracotta-dim: #8f4222;
-    --cream: #efe7d8;
+    --bg: #0a1a3a;
+    --surface: #10234d;
+    --surface-2: #1a3060;
+    --cement: #c7d2e8;
+    --cement-dim: #7d8db0;
     --gold: #d9a441;
+    --gold-dim: #b8862f;
+    --cream: #ffffff;
     --radius: 6px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(ellipse at 20% -10%, #3a2f27 0%, transparent 55%),
-      radial-gradient(ellipse at 90% 10%, #2e2620 0%, transparent 45%),
+      radial-gradient(ellipse at 20% -10%, #16305f 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 10%, #0d1f45 0%, transparent 45%),
       var(--bg);
     color:var(--cream);
     font-family:'Work Sans', sans-serif;
@@ -39,7 +38,7 @@
     font-size:12px;
     letter-spacing:.18em;
     text-transform:uppercase;
-    color:var(--terracotta);
+    color:var(--gold);
     margin-bottom:14px;
   }
   h1{
@@ -52,7 +51,7 @@
     text-align:center;
     color:var(--cream);
   }
-  h1 span{color:var(--terracotta);}
+  h1 span{color:var(--gold);}
   .sub{
     max-width:480px;
     text-align:center;
@@ -62,7 +61,6 @@
     margin:0 0 44px;
   }
   .sub strong{color:var(--cream);font-weight:600;}
-
   .stats{
     font-family:'JetBrains Mono', monospace;
     text-align:center;
@@ -78,7 +76,6 @@
     font-weight:500;
     color:var(--cement);
   }
-
   .bar-wrap{
     width:100%;
     max-width:420px;
@@ -95,7 +92,7 @@
   .bar-fill{
     height:100%;
     width:0%;
-    background:linear-gradient(90deg, var(--terracotta-dim), var(--terracotta));
+    background:linear-gradient(90deg, var(--gold-dim), var(--gold));
     border-radius:11px 0 0 11px;
     transition:width 900ms cubic-bezier(.22,.8,.28,1);
   }
@@ -107,13 +104,12 @@
     font-size:12px;
     color:var(--cement-dim);
   }
-  .bar-labels #pctText{color:var(--terracotta);font-weight:700;}
-
+  .bar-labels #pctText{color:var(--gold);font-weight:700;}
   .cta{
     margin-top:38px;
     display:inline-block;
-    background:var(--terracotta);
-    color:var(--cream);
+    background:var(--gold);
+    color:var(--bg);
     text-decoration:none;
     font-family:'Work Sans', sans-serif;
     font-weight:600;
@@ -121,11 +117,10 @@
     padding:15px 34px;
     border-radius:var(--radius);
     letter-spacing:.01em;
-    box-shadow:0 4px 0 var(--terracotta-dim);
+    box-shadow:0 4px 0 var(--gold-dim);
     transition:transform .15s ease, box-shadow .15s ease;
   }
-  .cta:hover{transform:translateY(2px);box-shadow:0 2px 0 var(--terracotta-dim);}
-
+  .cta:hover{transform:translateY(2px);box-shadow:0 2px 0 var(--gold-dim);}
   .foot{
     margin-top:56px;
     font-size:12px;
@@ -135,15 +130,12 @@
 </style>
 </head>
 <body>
-
   <div class="eyebrow">Campanha de construção</div>
   <h1>1.200 <span>sacos</span><br>de cimento</h1>
   <p class="sub">Toda doação, de qualquer valor, vira sacos de cimento — e cada saco levanta um pouco mais da nossa igreja.</p>
-
   <div class="stats">
     <div class="primary"><span id="bagsDonated">0</span> <small>/ 1.200 sacos</small></div>
   </div>
-
   <div class="bar-wrap">
     <div class="bar-track">
       <div id="barFill" class="bar-fill"></div>
@@ -154,32 +146,23 @@
       <span>1.200 sacos</span>
     </div>
   </div>
-
-  <a class="cta" href="#" id="donateLink">Fazer uma doação</a>
-
+  <a class="cta" href="https://web.inchurch.com.br/doacoes/9949?t=eyJhcHBfaWQiOiAiYnIuY29tLmluY2h1cmNoLmlibWlyYW1hciIsICJ0ZXJ0aWFyeWdyb3VwX2lkIjogMzUzMTh9" id="donateLink">Fazer uma doação</a>
   <div class="foot">Doações processadas pelo app da igreja.<br>Atualizado automaticamente.</div>
-
-
 <script>
   const GOAL_BAGS = 1200;
-
   // Cole aqui o link da aba "Total" publicada como CSV (Arquivo → Compartilhar →
   // Publicar na web → selecionar a aba "Total" → formato CSV).
   const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQrDo51LK2ujkJp2WmqvilVq_cm6msu8kIlpH8sV7BMKODAIqM3qx1NxdzbTIGV6Q/pub?gid=1260103814&single=true&output=csv';
-
   const barFill = document.getElementById('barFill');
   const pctText = document.getElementById('pctText');
   const bagsEl = document.getElementById('bagsDonated');
-
   function render(bags){
     const clamped = Math.max(0, Math.min(GOAL_BAGS, bags));
     const pct = clamped / GOAL_BAGS;
-
     barFill.style.width = (pct * 100) + '%';
     pctText.textContent = Math.round(pct * 100) + '%';
     bagsEl.textContent = clamped.toLocaleString('pt-BR');
   }
-
   async function refresh(){
     if (!SHEET_CSV_URL){
       console.warn('SHEET_CSV_URL não configurado ainda.');
@@ -195,10 +178,8 @@
       console.error('Falha ao buscar dados da planilha', e);
     }
   }
-
   refresh();
   setInterval(refresh, 60000); // reconsulta a planilha a cada 60s
 </script>
-
 </body>
 </html>
