@@ -165,7 +165,7 @@
 
   // Cole aqui o link da aba "Total" publicada como CSV (Arquivo → Compartilhar →
   // Publicar na web → selecionar a aba "Total" → formato CSV).
-  const SHEET_CSV_URL = '';
+  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQrDo51LK2ujkJp2WmqvilVq_cm6msu8kIlpH8sV7BMKODAIqM3qx1NxdzbTIGV6Q/pub?gid=1260103814&single=true&output=csv';
 
   const barFill = document.getElementById('barFill');
   const pctText = document.getElementById('pctText');
@@ -182,7 +182,7 @@
 
   async function refresh(){
     if (!SHEET_CSV_URL){
-      console.warn('https://docs.google.com/spreadsheets/d/e/2PACX-1vQrDo51LK2ujkJp2WmqvilVq_cm6msu8kIlpH8sV7BMKODAIqM3qx1NxdzbTIGV6Q/pub?output=csv');
+      console.warn('SHEET_CSV_URL não configurado ainda.');
       return;
     }
     try{
